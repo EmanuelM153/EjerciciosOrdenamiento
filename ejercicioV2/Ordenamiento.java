@@ -9,33 +9,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class Ordenamiento {
-  // public static void main(String[] args) {
-  //   String[] datos = {"AA", "AC", "AB", "BZ", "CN"};
-  //   ArrayList<String> datosArrList = new ArrayList<String>(Arrays.asList(datos));
-  //
-  //   Integer[] datosNumericos = {1, 2, 5, 2, 62, 4};
-  //   ArrayList<Integer> datosNumericosArr = new ArrayList<Integer>(Arrays.asList(datosNumericos));
-  //
-  //   Ordenamiento.<Integer>bubbleSort().accept(datosNumericosArr, Integer::compareTo);
-  //
-  //   Function<String, Integer> obtenerKey =
-  //       (str) -> {
-  //         int c = (int) str.charAt(0);
-  //         return c - 64;
-  //       };
-  //
-  //   Function<Integer, Function<String, Integer>> obtenerCaracter =
-  //       (digito) ->
-  //           (str) -> {
-  //             return obtenerKey.apply(String.valueOf(str.charAt(str.length() - digito - 1)));
-  //           };
-  //
-  //   Ordenamiento.<String>radixSort(2, 27).accept(datosArrList, obtenerCaracter);
-  //
-  //   System.out.println(datosNumericosArr.toString());
-  //   System.out.println(datosArrList.toString());
-  // }
-
   public static final <T>
       BiConsumer<ArrayList<T>, Function<Integer, Function<T, Integer>>> radixSort(
           int maxDigitos, int maxKey) {
@@ -44,12 +17,23 @@ public class Ordenamiento {
       Function<T, Integer> digitos;
       for (int i = 0; i < maxDigitos; i++) {
         digitos = obtenerDigito.apply(i);
-        Ordenamiento.<T>countingSort(maxKey).accept(datos, digitos);
+        Ordenamiento.<T>bucketSort(maxKey).accept(datos, digitos);
       }
     };
   }
 
-  public static final <T> BiConsumer<ArrayList<T>, Function<T, Integer>> countingSort(int maxKey) {
+  public static final Function<Integer, Function<Integer, Integer>> obtenerDigito =
+      (numDigito) ->
+          (num) -> {
+            int digito;
+
+            if (numDigito == 0) digito = num % 10;
+            else digito = ((int) (num / Math.pow(10, numDigito)) % 10);
+
+            return digito;
+          };
+
+  public static final <T> BiConsumer<ArrayList<T>, Function<T, Integer>> bucketSort(int maxKey) {
     return (datos, obtenerKey) -> {
       ArrayList<Queue<T>> colas = new ArrayList<>(maxKey);
 
