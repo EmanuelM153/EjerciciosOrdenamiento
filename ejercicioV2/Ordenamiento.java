@@ -17,9 +17,27 @@ public class Ordenamiento {
       Function<T, Integer> digitos;
       for (int i = 0; i < maxDigitos; i++) {
         digitos = obtenerDigito.apply(i);
-        Ordenamiento.<T>bucketSort(maxKey).accept(datos, digitos);
+        Ordenamiento.<T>bucketSort(maxKey + 1).accept(datos, digitos);
       }
     };
+  }
+
+  public static <T> int encontrarMayorNumDigito(
+      ArrayList<T> datos, Function<T, Integer> obtenerNumero) {
+    int mayorNumDigito = 1;
+
+    for (T dato : datos) {
+      int num = obtenerNumero.apply(dato);
+
+      int numDigitos = obtenerNumDigitos(num);
+      if (numDigitos > mayorNumDigito) mayorNumDigito = numDigitos;
+    }
+
+    return mayorNumDigito;
+  }
+
+  private static int obtenerNumDigitos(int num) {
+    return (int) Math.log10(num) + 1;
   }
 
   public static final Function<Integer, Function<Integer, Integer>> obtenerDigito =
@@ -65,7 +83,10 @@ public class Ordenamiento {
 
         for (int i = 0; i < datos.size() - 1; i++) {
           boolean masGrande = comparador.apply(datos.get(i), datos.get(i + 1)) > 0;
-          if (masGrande) Collections.swap(datos, i, i + 1);
+          if (masGrande) {
+            Collections.swap(datos, i, i + 1);
+            ordenados = false;
+          }
         }
       }
     };

@@ -26,11 +26,24 @@ public class Estudiante {
     return notas;
   }
 
-  public float getNotaFinal() {
+  public Float getNotaFinal() {
     return notaFinal;
   }
 
-  public void setNotaFinal(float notaFinal) {
-    this.notaFinal = notaFinal;
+  public void calcularNotaFinal() {
+    this.notaFinal = notas.get(0) * 0.3f + notas.get(1) * 0.3f + notas.get(2) * 0.4f;
+  }
+
+  @Override
+  public String toString() {
+    return "Estudiante [nombre="
+        + nombre
+        + ", codigo="
+        + codigo
+        + ", notas="
+        + notas.toString()
+        + ", notaFinal="
+        + notaFinal
+        + "]";
   }
 }

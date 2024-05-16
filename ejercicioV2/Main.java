@@ -19,7 +19,10 @@ public class Main {
     Scanner scanner = new Scanner(System.in);
 
     guardarDatos();
-    mostrarDatos(4.5f);
+
+    float promedio = calcularPromedioGeneral();
+
+    mostrarDatos(promedio);
 
     int opcion = -1;
 
@@ -48,7 +51,7 @@ public class Main {
 
           break;
         case 2:
-          mostrarDatos(4.5f);
+          mostrarDatos(promedio);
         default:
           break;
       }
@@ -58,9 +61,23 @@ public class Main {
     scanner.close();
   }
 
+  public static float calcularPromedioGeneral() {
+    float promedio = 0;
+
+    for (Estudiante e : estudiantes) promedio += e.getNotaFinal();
+
+    return promedio / numEstudiantes;
+  }
+
   public static void ordenarPorCodigo() {
-    Ordenamiento.<Estudiante>radixSort(obtenerMaxDigitos(estudiantes, Estudiante::getCodigo), 9)
-        .accept(estudiantes, Ordenamiento.obtenerDigito);
+    int mayorNumDigito = Ordenamiento.encontrarMayorNumDigito(estudiantes, Estudiante::getCodigo);
+    Ordenamiento.<Estudiante>radixSort(mayorNumDigito, 9)
+        .accept(
+            estudiantes,
+            (numDigito) ->
+                (e) -> {
+                  return Ordenamiento.obtenerDigito.apply(numDigito).apply(e.getCodigo());
+                });
   }
 
   public static void ordenarPorNotaFinal() {
@@ -70,14 +87,16 @@ public class Main {
             (e1, e2) -> {
               int comparacion = 0;
 
-              if (e1.getNotaFinal() > e2.getNotaFinal()) comparacion = 1;
-              if (e1.getNotaFinal() < e2.getNotaFinal()) comparacion = -1;
+              if (e1.getNotaFinal() < e2.getNotaFinal()) comparacion = 1;
+              if (e1.getNotaFinal() > e2.getNotaFinal()) comparacion = -1;
 
               return comparacion;
             });
   }
 
   public static Optional<Estudiante> buscarEstudiante(int codigoBusqueda) {
+    ordenarPorCodigo();
+
     BusquedaBinaria<Estudiante, Integer> busquedaBinaria =
         new BusquedaBinaria<Estudiante, Integer>(
             Estudiante::getCodigo, estudiantes, codigoBusqueda);
@@ -112,18 +131,20 @@ public class Main {
 
   public static void recorrerNotas(int estudianteIndice, int indice) {
     if (indice == numNotas) {
+      System.out.printf("%.2f", estudiantes.get(estudianteIndice).getNotaFinal());
       return;
     } else {
       System.out.printf("%.2f\t", estudiantes.get(estudianteIndice).getNotas().get(indice));
-      recorrerNotas(estudianteIndice, indice);
+      recorrerNotas(estudianteIndice, ++indice);
     }
   }
 
   public static void guardarDatos() {
     for (int i = 0; i < numEstudiantes; i++) {
-      Estudiante e = new Estudiante("John Doe - " + (i + 1), random.nextInt(1, 100));
+      Estudiante e = new Estudiante("John Doe - " + (i + 1), random.nextInt(1, 1000));
 
       for (int j = 0; j < numNotas; j++) e.getNotas().add(random.nextFloat(0, 5));
+      e.calcularNotaFinal();
 
       estudiantes.add(e);
     }
