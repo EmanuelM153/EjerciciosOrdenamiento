@@ -5,12 +5,12 @@ import java.util.Arrays;
 
 public class Main2 {
   public static void main(String[] args) {
-    String[] numerosBase16 = {"C", "6", "7B", "2D", "FF", "337", "3E8"};
+    String[] palabras = {"hola", "hielo", "a", "tronco", "murcielago", "dinosaurio", "mamut"};
 
-    ArrayList<String> numerosBase10Arr = new ArrayList<String>(Arrays.asList(numerosBase16));
+    ArrayList<String> palabrasArr = new ArrayList<String>(Arrays.asList(palabras));
 
-    RadixSort.ordenarHexadecimal(numerosBase10Arr, 3);
+    RadixSort.ordenarTexto(palabrasArr, 10);
 
-    System.out.println(numerosBase10Arr.toString());
+    System.out.println(palabrasArr.toString());
   }
 }

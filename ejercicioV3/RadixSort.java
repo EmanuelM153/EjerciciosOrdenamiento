@@ -39,6 +39,23 @@ public class RadixSort {
     RadixSort.<Integer>radixSort(maxDigitos, 7).accept(datos, obtenerDigito);
   }
 
+  public static void ordenarTexto(ArrayList<String> datos, int maxDigitos) {
+    Function<Integer, Function<String, Integer>> obtenerCaracter =
+        (numDigito) ->
+            (str) -> {
+              int digito = 0;
+
+              if (str.length() > numDigito) {
+                int digitoAscii = (int) str.charAt(numDigito);
+                digito = digitoAscii - 97;
+              }
+
+              return digito;
+            };
+
+    RadixSort.<String>radixSort(maxDigitos, 25).accept(datos, obtenerCaracter);
+  }
+
   public static void ordenarHexadecimal(ArrayList<String> datos, int maxDigitos) {
     Function<Integer, Function<String, Integer>> obtenerDigitoHexadecimal =
         (numDigito) ->
