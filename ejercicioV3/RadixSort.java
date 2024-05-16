@@ -7,53 +7,42 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class RadixSort {
-  public static final <T>
-      BiConsumer<ArrayList<T>, Function<Integer, Function<T, Integer>>> radixSort(
-          int maxDigitos, int maxKey) {
-
-    return (datos, obtenerDigito) -> {
-      Function<T, Integer> digitos;
-      for (int i = 0; i < maxDigitos; i++) {
-        digitos = obtenerDigito.apply(i);
-        RadixSort.<T>bucketSort(maxKey + 1).accept(datos, digitos);
-      }
-    };
-  }
-
-  private static final Function<Integer, Function<Integer, Integer>> obtenerDigito =
-      (numDigito) ->
-          (num) -> {
-            int digito;
-
-            if (numDigito == 0) digito = num % 10;
-            else digito = ((int) (num / Math.pow(10, numDigito)) % 10);
-
-            return digito;
-          };
-
-  public static void ordenarEnteros(ArrayList<Integer> datos, int maxDigitos) {
-    RadixSort.<Integer>radixSort(maxDigitos, 9).accept(datos, obtenerDigito);
-  }
-
-  public static void ordenarOctal(ArrayList<Integer> datos, int maxDigitos) {
-    RadixSort.<Integer>radixSort(maxDigitos, 7).accept(datos, obtenerDigito);
-  }
-
-  public static void ordenarTexto(ArrayList<String> datos, int maxDigitos) {
-    Function<Integer, Function<String, Integer>> obtenerCaracter =
+  public static void ordenarBinarios(ArrayList<String> datos, int maxDigitos) {
+    Function<Integer, Function<String, Integer>> obtenerDigitoBinario =
         (numDigito) ->
             (str) -> {
               int digito = 0;
+              if (str.length() > numDigito)
+                digito = Character.getNumericValue(str.charAt(str.length() - numDigito - 1));
 
-              if (str.length() > numDigito) {
-                int digitoAscii = (int) str.charAt(numDigito);
-                digito = digitoAscii - 97;
+              return digito;
+            };
+
+    RadixSort.<String>radixSort(maxDigitos, 2).accept(datos, obtenerDigitoBinario);
+  }
+
+  public static void ordenarEnteros(ArrayList<Integer> datos, int maxDigitos) {
+    RadixSort.<Integer>radixSort(maxDigitos, 10).accept(datos, OrdenamientoUtils.obtenerDigito);
+  }
+
+  public static void ordenarOctal(ArrayList<Integer> datos, int maxDigitos) {
+    RadixSort.<Integer>radixSort(maxDigitos, 8).accept(datos, OrdenamientoUtils.obtenerDigito);
+  }
+
+  public static void ordenarCadenas(ArrayList<String> datos, int maxDigitos) {
+    Function<Integer, Function<String, Integer>> obtenerDigitoASCII =
+        (numDigito) ->
+            (str) -> {
+              int digito = 0;
+              int diferencia = maxDigitos - str.length();
+              if (numDigito >= diferencia) {
+                digito = (int) str.charAt(str.length() - (numDigito - diferencia) - 1);
               }
 
               return digito;
             };
 
-    RadixSort.<String>radixSort(maxDigitos, 25).accept(datos, obtenerCaracter);
+    RadixSort.<String>radixSort(maxDigitos, 255).accept(datos, obtenerDigitoASCII);
   }
 
   public static void ordenarHexadecimal(ArrayList<String> datos, int maxDigitos) {
@@ -72,7 +61,20 @@ public class RadixSort {
               return digito;
             };
 
-    RadixSort.<String>radixSort(maxDigitos, 15).accept(datos, obtenerDigitoHexadecimal);
+    RadixSort.<String>radixSort(maxDigitos, 16).accept(datos, obtenerDigitoHexadecimal);
+  }
+
+  public static final <T>
+      BiConsumer<ArrayList<T>, Function<Integer, Function<T, Integer>>> radixSort(
+          int maxDigitos, int maxKey) {
+
+    return (datos, obtenerDigito) -> {
+      Function<T, Integer> digitos;
+      for (int i = 0; i < maxDigitos; i++) {
+        digitos = obtenerDigito.apply(i);
+        RadixSort.<T>bucketSort(maxKey).accept(datos, digitos);
+      }
+    };
   }
 
   private static final <T> BiConsumer<ArrayList<T>, Function<T, Integer>> bucketSort(int maxKey) {

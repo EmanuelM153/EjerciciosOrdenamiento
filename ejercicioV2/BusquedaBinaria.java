@@ -2,6 +2,7 @@ package ejercicioV2;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class BusquedaBinaria<T, U extends Comparable<U>> {
@@ -16,18 +17,21 @@ public class BusquedaBinaria<T, U extends Comparable<U>> {
   }
 
   public Optional<T> buscar() {
-    return buscarRecursivamente(0, datos.size() - 1);
+    return buscarRecursivamente().apply(0, datos.size() - 1);
   }
 
-  private final Optional<T> buscarRecursivamente(int inicio, int fin) {
-    if (inicio > fin) return Optional.empty();
+  private final BiFunction<Integer, Integer, Optional<T>> buscarRecursivamente() {
+    return (inicio, fin) -> {
+      if (inicio > fin) return Optional.empty();
 
-    int medio = (inicio + fin) / 2;
+      int medio = (inicio + fin) / 2;
 
-    U keyMedio = obtenerKey.apply(datos.get(medio));
+      U keyMedio = obtenerKey.apply(datos.get(medio));
 
-    if (keyMedio.equals(key)) return Optional.of(datos.get(medio));
-    else if (key.compareTo(keyMedio) < 0) return buscarRecursivamente(inicio, medio - 1);
-    else return buscarRecursivamente(medio + 1, fin);
+      if (keyMedio.equals(key)) return Optional.of(datos.get(medio));
+      else if (key.compareTo(keyMedio) < 0)
+        return this.buscarRecursivamente().apply(inicio, medio - 1);
+      else return this.buscarRecursivamente().apply(medio + 1, fin);
+    };
   }
 }

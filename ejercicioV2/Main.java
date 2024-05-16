@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Main {
   private static final Random random = new Random();
   private static final int numEstudiantes = 5;
   private static final int numNotas = 3;
-  private static final ArrayList<Estudiante> estudiantes = new ArrayList<>();
+  private static ArrayList<Estudiante> estudiantes = new ArrayList<>();
 
   public Main() {
     random.setSeed(System.currentTimeMillis());
@@ -70,28 +71,25 @@ public class Main {
   }
 
   public static void ordenarPorCodigo() {
-    int mayorNumDigito = Ordenamiento.encontrarMayorNumDigito(estudiantes, Estudiante::getCodigo);
-    Ordenamiento.<Estudiante>radixSort(mayorNumDigito, 9)
-        .accept(
-            estudiantes,
-            (numDigito) ->
-                (e) -> {
-                  return Ordenamiento.obtenerDigito.apply(numDigito).apply(e.getCodigo());
-                });
+    estudiantes =
+        new ArrayList<Estudiante>(
+            estudiantes.stream()
+                .sorted(
+                    (e1, e2) -> {
+                      return Integer.compare(e1.getCodigo(), e2.getCodigo());
+                    })
+                .collect(Collectors.toList()));
   }
 
   public static void ordenarPorNotaFinal() {
-    Ordenamiento.<Estudiante>bubbleSort()
-        .accept(
-            estudiantes,
-            (e1, e2) -> {
-              int comparacion = 0;
-
-              if (e1.getNotaFinal() < e2.getNotaFinal()) comparacion = 1;
-              if (e1.getNotaFinal() > e2.getNotaFinal()) comparacion = -1;
-
-              return comparacion;
-            });
+    estudiantes =
+        new ArrayList<Estudiante>(
+            estudiantes.stream()
+                .sorted(
+                    (e1, e2) -> {
+                      return Float.compare(e2.getNotaFinal(), e1.getNotaFinal());
+                    })
+                .collect(Collectors.toList()));
   }
 
   public static Optional<Estudiante> buscarEstudiante(int codigoBusqueda) {
